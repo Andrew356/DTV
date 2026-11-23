@@ -1,0 +1,60 @@
+name: DTV
+options:
+  bundleIdPrefix: com.example
+  deploymentTarget:
+    tvOS: "17.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.10"
+    DEVELOPMENT_TEAM: ""            # <- set your Apple Developer Team ID
+    CODE_SIGN_STYLE: Automatic
+
+# Optional: VLC playback engine (MKV / raw MPEG-TS / AVI etc).
+# Uncomment this block AND the `dependencies` entry under the DTV target, then
+# re-run `xcodegen`. The app compiles and runs without it (AVPlayer only).
+# packages:
+#   VLCKitSPM:
+#     url: https://github.com/tylerjonesio/vlckit-spm
+#     from: "3.6.0"
+
+targets:
+  DTV:
+    type: application
+    platform: tvOS
+    sources:
+      - path: DTV
+    info:
+      path: DTV/Info.plist
+      properties:
+        CFBundleDisplayName: DTV
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "1"
+        UILaunchScreen: {}
+        UIRequiredDeviceCapabilities: [arm64]
+        UIUserInterfaceStyle: Dark
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: true          # most IPTV servers are plain http
+    entitlements:
+      path: DTV/DTV.entitlements
+      properties:
+        com.apple.developer.ubiquity-kvstore-identifier: $(TeamIdentifierPrefix)$(CFBundleIdentifier)
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.DTV   # <- change to your own reverse-DNS id
+        TARGETED_DEVICE_FAMILY: "3"
+    # dependencies:
+    #   - package: VLCKitSPM
+    #     product: TVVLCKit
+
+  DTVTests:
+    type: bundle.unit-test
+    platform: tvOS
+    sources:
+      - path: DTVTests
+    dependencies:
+      - target: DTV
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
